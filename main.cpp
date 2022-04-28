@@ -11,7 +11,7 @@
 #define T1POS 15
 #define T2POS 30
 #define T3POS 45
-#define DISKS 3
+#define DISKS 7
 
 using namespace std;
 
@@ -164,12 +164,37 @@ int move(int top, int top2)      // The structure of the game how to move DISK o
 	}
 	return 0;
 }
-int win()
+int win(char mode)
 {
+    // The user will choose the Mode of game //
+
+    if(mode =='1')
+
+	{   // Easier Mode that user can win if he could move the tower to any another one //
+
+	    for(int i=0; i<DISKS; i++)
+		      if (towers[2][i]!= DISKS-i )
+                if (towers[1][i]!= DISKS-i )
+                return 0;
+
+	}
+	if(mode =='2')
+
+    { // Harder Mode that user can win only if he could move the tower to tower no 2 //
+
+        for(int i=0; i<DISKS; i++)
+            if (towers[1][i]!= DISKS-i )
+            return 0;
+
+    }
+    if(mode =='3')
+
+    { // Harder Mode that user can win only if he could move the tower to tower no 3 //
+
         for(int i=0; i< DISKS; i++)
             if (towers[2][i]!= DISKS-i )
             return 0;
-
+    }
 
 	return 1;
 }
@@ -193,6 +218,20 @@ void play()
 	for(int i=0; i<DISKS; i++)
 		towers[2][i] = 0;
 
+   //Set empty
+	   gotoxy(10,5);
+	   cout<<"--> Enter your mode.. "<<endl<<endl;
+		gotoxy(10,7);
+		 cout<<"1.Easy (win either from tower 2 or tower 3)\n";
+		 gotoxy(10,9);
+		 cout<<"2.Win if move to tower number 2\n";
+		gotoxy(10,11);
+		 cout<<"3.Win if move to tower number 3\n";
+		gotoxy(10,13);
+		cout<<"--> Select option: ";
+
+		// to choose the mode //
+		mode = getche();
 
 	do{
 
@@ -206,7 +245,7 @@ void play()
 		drawTower(2);
 		drawTower(3);
 
-		if( win())
+		if( win(mode))
 
             { // check the conditions of Winning according to the chosen mode //
 
