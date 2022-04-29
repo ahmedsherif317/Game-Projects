@@ -13,7 +13,7 @@
 #define T1POS 15
 #define T2POS 30
 #define T3POS 45
-#define DISKS 7
+#define DISKS 3
 
 using namespace std;
 
@@ -221,7 +221,9 @@ void play()
 		towers[2][i] = 0;
 
    //Set empty
-	   gotoxy(10,5);
+   do{
+       system("cls");
+        gotoxy(10,5);
 	   cout<<"--> Enter your mode.. "<<endl<<endl;
 		gotoxy(10,7);
 		 cout<<"1.Easy (win either from tower 2 or tower 3)\n";
@@ -231,9 +233,15 @@ void play()
 		 cout<<"3.Win if move to tower number 3\n";
 		gotoxy(10,13);
 		cout<<"--> Select option: ";
+              mode=getche();
+		if( mode != '1'&& mode != '2' && mode != '3' )     // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
+           {continue;}
+           else
+            break;
 
-		// to choose the mode //
-		mode = getche();
+    }while(1);
+
+    // to choose the mode //
 
 	do{
 
@@ -267,15 +275,11 @@ void play()
 		gotoxy(10,15);
 		cout << "From (Values: 1,2,3): ";  // choose the Disk to be move from the tower //
 		cin >> topchar;
-		//if (isdigit(topchar)==false)
-         //   continue;
-        //top = stoi(topchar);
 
-		//gotoxy(10,16);
+		gotoxy(10,16);
 		cout << "To (Values: 1,2,3): ";   // choose the tower that will accept the new disk //
 		cin >> topchar2;
-       // if (isdigit(topchar2)==false)
-       //     continue;
+
 
 		if( topchar2 != '1'&& topchar2 != '2' && topchar2 != '3' )     // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
             continue;
@@ -283,13 +287,11 @@ void play()
 		 continue;
 		if( topchar == topchar2 )              // No Movement will happen ! //
             continue;
-            top = (int)topchar - '0';
+            top = (int)topchar - '0'; // to turn the char into the number
+            // '0' it's the Refrence ASCII code for the numbers
             top2 = (int)topchar2 - '0';
 
-        //stringstream conv(topchar);
-        //conv>>top;
-        //stringstream conv(topchar2);
-        //conv>>top2;
+
 		top--; // Because array starts from 0 not 1 , we Make the towers starts from 1 to be shown for user //
 		top2--;
 
@@ -356,3 +358,5 @@ int main()
 
 	return 0;
 }
+
+
