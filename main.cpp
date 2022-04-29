@@ -5,9 +5,11 @@
 #include <time.h>
 #include <chrono>
 #include <unistd.h>
-
+#include <sstream>
 #define WIN_WIDTH 70
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 #define T1POS 15
 #define T2POS 30
 #define T3POS 45
@@ -202,7 +204,7 @@ int win(char mode)
 void play()
 {
     auto start = chrono::steady_clock::now();
-
+    char topchar,topchar2;
 	int top , top2;
 	int count=0;
 	char mode;
@@ -264,18 +266,30 @@ void play()
 
 		gotoxy(10,15);
 		cout << "From (Values: 1,2,3): ";  // choose the Disk to be move from the tower //
-		cin >> top;
-		gotoxy(10,16);
+		cin >> topchar;
+		//if (isdigit(topchar)==false)
+         //   continue;
+        //top = stoi(topchar);
+
+		//gotoxy(10,16);
 		cout << "To (Values: 1,2,3): ";   // choose the tower that will accept the new disk //
-		cin >> top2;
+		cin >> topchar2;
+       // if (isdigit(topchar2)==false)
+       //     continue;
 
-		if( top2 < 1 || top2 > 3 )     // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
+		if( topchar2 != '1'&& topchar2 != '2' && topchar2 != '3' )     // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
             continue;
-		if( top < 1 || top > 3 )       // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
+		if( topchar != '1' && topchar != '2' && topchar != '3' )       // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
 		 continue;
-		if( top == top2 )              // No Movement will happen ! //
+		if( topchar == topchar2 )              // No Movement will happen ! //
             continue;
+            top = (int)topchar - '0';
+            top2 = (int)topchar2 - '0';
 
+        //stringstream conv(topchar);
+        //conv>>top;
+        //stringstream conv(topchar2);
+        //conv>>top2;
 		top--; // Because array starts from 0 not 1 , we Make the towers starts from 1 to be shown for user //
 		top2--;
 
