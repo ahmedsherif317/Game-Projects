@@ -1,83 +1,74 @@
 #include<iostream>
-#include<conio.h>
-#include<dos.h>
-#include <windows.h>
-#include <time.h>
-#include <chrono>
-#define T1POS 15
+#include<conio.h> // getch() Function //
+#include <windows.h> // Handle //
+#include <chrono> // Time //
+
+#define T1POS 15 // Constant Variables For Drawing //
 #define T2POS 30
 #define T3POS 45
-#define WIN_WIDTH 70
+
 
 using namespace std;
 
-
 HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 COORD CursorPosition;
+
 class Game
 {
 
 public:
-	int DISKS;
-	int* towers[3];
-	Game(int value) {
-		DISKS = value;
-		towers[0] = new int[DISKS];              // The three towers to fill one of them //
-                                    // Using Dynamic Stack to make it flexible for player to choose mode //
+	int DISKS;               // Levels of The tower //
+	int* towers[3];    // Dynamic Allocation , Body of the stack //
+	int towerTop[3];     // Top of the Stack of each tower //
+	Game(int value)
+	{
+		DISKS = value;                     // Chosen  by the player //
+		towers[0] = new int[DISKS];       // The three towers to fill one of them //
+                                           // Using Dynamic Stack to make it flexible for player to choose mode //
 		towers[1] = new int[DISKS];
 		towers[2] = new int[DISKS];
-		towerTop[0] =  DISKS - 1;
-		towerTop[1] =  - 1;
-		towerTop[2] =  - 1;
+
+		towerTop[0] =  DISKS - 1; // The top of The Source tower //
+		towerTop[1] =  - 1;       // The top of The Auxiliary/Target tower "Empty at Beginning" //
+		towerTop[2] =  - 1;       // The top of The Target/Auxiliary tower "Empty at Beginning"//
 
 	}
-	int towerTop[3];
-	// Top of the Stack of each tower //
 
-	void gotoxy(int x, int y)             // To set Coordinates of any output on the screen //
+
+	void gotoxy(int x, int y)       // To set Coordinates of any output on the screen //
 	{
 		CursorPosition.X = x;
 		CursorPosition.Y = y;
 		SetConsoleCursorPosition(console, CursorPosition);
 	}
-	void setcursor(bool visible, DWORD size)
-	{
 
-
-		if (size == 0)
-			size = 20;
-		CONSOLE_CURSOR_INFO lpCursor;
-		lpCursor.bVisible = visible;
-		lpCursor.dwSize = size;
-		SetConsoleCursorInfo(console, &lpCursor);
-	}
 	void instructions()
-	{
+	{          // In case the user does not know how to play //
 
-		// In case the user does not know how to play //
-		system("cls");
+		system("cls");    // To clear the output screen of the program //
 		cout << "Instructions";
 		cout << "\n----------------";
 		cout << "\n  if Easy mode : Shift Disks from Tower 1 to Tower 3 or 2. \n";
 		cout << "\n  if Harder mode : Shift Disks from Tower 1 to specific tower .\n ";
-		cout << "\n You can not place large disk on small disk \n";
+		cout << "\n You can't place large disk on smaller disk \n";
 		cout << "\n Towers are Numbered as 1,2 and 3 \n";
-		cout << "\n\nPress any key to go back to menu \n";
-		_getch();
+		cout << "\n\n Press any key to go back to menu \n";
+		getch();
 
 	}
 	void drawTile(int tower, int tileNo, int y)
 	{
-		// Set the position of the TowerDisks //
+		// Set the position of the TowerDisks and Draw it "±" //
 		int x;
 		if (tower == 1)
-			x = T1POS;
+			x = T1POS;   // Coordinate of Source Tower DISKS //
 		else if (tower == 2)
-			x = T2POS;
+			x = T2POS;    // Coordinate of Auxiliary/Target Tower DISKS //
 		else if (tower == 3)
-			x = T3POS;
+			x = T3POS;    // Coordinate of Auxiliary/Target Tower DISKS //
 		x -= tileNo;
-		for (int j = 0; j < ((tileNo) * 2) - 1; j++) {
+		for (int j = 0; j < ((tileNo) * 2) - 1; j++)
+            {
 			gotoxy(x, y);
 			cout << "±";
 			x++;
@@ -92,9 +83,9 @@ public:
 		gotoxy(15, 11); cout << "1";
 		gotoxy(30, 11); cout << "2";
 		gotoxy(45, 11); cout << "3";
-		for (int i = 0; i < DISKS; i++)    // Draw DISKS , we can change no. of them //
+		for (int i = 0; i < DISKS; i++)
 		{
-			drawTile(tower, towers[tower - 1][i], y);
+			drawTile(tower, towers[tower - 1][i], y); // (tower-1) because array starts from 0 //
 			y--;
 		}
 	}
@@ -105,38 +96,37 @@ public:
 				return 0;
 		return 1;
 	}
-	int validate(int top, int top2)
+	int validate(int from, int to)
 	{  // Check the condition of the game that must the DISKS to be move smaller than the other //
-		if (!isEmpty(top2))
+		if (!isEmpty(to))
 		{
-			if (towers[top][towerTop[top]] < towers[top2][towerTop[top2]])
+			if (towers[from][towerTop[from]] < towers[to][towerTop[to]])
 				return 1;
 			else
 				return 0;
 		}
 		return 1;
 	}
-	int move(int top, int top2)      // The structure of the game how to move DISK of tower to another //
+	int move(int tower1, int tower2)     // The structure of the game how to move DISK of tower to another //
 	{
 		// If the current tower is empty then we will not move anything //
-		if (isEmpty(top))
+		if (isEmpty(tower1))
 			return 0;
 		// If it isn't empty , Check the Condition of the Movement //
-		if (validate(top, top2))
+		if (validate(tower1, tower2))
 		{
 			// If the Condition came true , Now we can move the level to another tower //
-			if (towers[top][towerTop[top]] != 0)
-			{
-				towerTop[top2]++;
+
+				towerTop[tower2]++;
 				// By default top of the stack = -1 , now must be increased //
-				towers[top2][towerTop[top2]] = towers[top][towerTop[top]];
+				towers[tower2][towerTop[tower2]] = towers[tower1][towerTop[tower1]];
 				// Move the level From -> To //
-				towers[top][towerTop[top]] = 0;
+				towers[tower1][towerTop[tower1]] = 0;
 				// Clear the level from the current tower //
-				towerTop[top]--;
+				towerTop[tower1]--;
 				// the decrement the top to point to the last level in the tower (stack)
 				return 1;
-			}
+
 		}
 		return 0;
 	}
@@ -225,10 +215,10 @@ public:
 				cout << "============================================================" << endl;
 				cout << endl << endl << endl;
 
-				auto end = chrono::steady_clock::now(); // to calculate the time of playing , end counter //
+				auto end = chrono::steady_clock::now();  // to calculate the time of playing , end counter //
 
 				cout << "Elapsed time in seconds: " << chrono::duration_cast<chrono::seconds>(end - start).count() << endl;
-				// Time taken in playing //
+				              // Time taken in playing //
 
 				cout << endl << endl << "Number of Moves is : " << count << endl;
 
@@ -240,20 +230,18 @@ public:
 
 
 			gotoxy(10, 16);
-			gotoxy(10, 16);
 			cout << "To (Values: 1,2,3): ";   // choose the tower that will accept the new disk //
 			cin >> topchar2;
 
 
-			if (topchar2 != '1' && topchar2 != '2' && topchar2 != '3')     // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
+			if (topchar2 != '1' && topchar2 != '2' && topchar2 != '3')    // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
 				continue;
-			if (topchar != '1' && topchar != '2' && topchar != '3')       // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
+			if (topchar != '1' && topchar != '2' && topchar != '3')      // towers are { 1 ,2 ,3 } only , if user entered invalid no. //
 				continue;
 			if (topchar == topchar2)              // No Movement will happen ! //
 				continue;
-			top = (int)topchar - '0';
-			top = (int)topchar - '0'; // to turn the char into the number //
-			// '0' it's the Refrence ASCII code for the numbers //
+			top = (int)topchar - '0';    // to turn the char into the number //
+			                           // '0' it's the Refrence ASCII code for the numbers //
 			top2 = (int)topchar2 - '0';
 
 
@@ -263,17 +251,6 @@ public:
 
 			move(top, top2);
 			count++;
-			if (_kbhit())
-			{
-				char ch = _getch();
-				if (ch == 'a' || ch == 'A') {
-				}
-				if (ch == 'd' || ch == 'D') {
-				}
-				if (ch == 27) {
-					break;
-				}
-			}
 		} while (1);
 	}
 };
@@ -283,7 +260,7 @@ int main()
     int DISKS; // only valid input is greater than 1 //
     do{
             system("cls");
-        cout<<"Enter Number of DISKS ( The Trivial mode is 1 & Hardest one is 7 *__*): ";
+        cout<<"Enter Number of DISKS ( The Trivial mode is 1 & Hardest one is 7 __): ";
          Number_DISKS=getche();
     if (Number_DISKS != '1' && Number_DISKS != '2' && Number_DISKS != '3'&& Number_DISKS != '3'&& Number_DISKS != '4'&& Number_DISKS != '5'&& Number_DISKS != '6'&& Number_DISKS != '7')
 			{
@@ -295,14 +272,11 @@ int main()
 			}
 				break;
 
-
-
-
     }while(1);
 
 
 	Game game(DISKS);
-	game.setcursor(0, 0);
+
 
 	do {
 		system("cls");
